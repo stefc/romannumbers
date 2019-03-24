@@ -35,9 +35,10 @@ namespace romannumbers
 			.Select(RomanDigit)
 			.Zip(romanNumber
 				.Select(RomanDigit)
-				.Concat(Enumerable.Repeat(0,1))
-				.Skip(1), 
-				(curr,next) => curr * (next > curr ? -1 : +1))
+				.Skip(1)
+				.Append(0)
+				.Select( digit => digit - 1), 
+				(curr,next) => curr * Math.Sign(curr - next))
 			.Sum();
 
         private int RomanDigit(char digit) => 
