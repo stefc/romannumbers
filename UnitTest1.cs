@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -21,11 +22,23 @@ namespace romannumbers
 			Assert.Equal(expected, this.RomanToDecimal(romanNumber));
 		}
 
-        private int RomanToDecimal(string romanNumber) => 
-            romanNumber
-                .Select(RomanDigit)
-                .Aggregate( (result: 0, last: 0), (acc, digit) 
-                    => (acc.result + digit - ((digit > acc.last) ? acc.last << 1: 0), digit)).result;
+/* private int RomanToDecimal(string romanNumber) => 
+	romanNumber
+		.Select(RomanDigit)
+		.Aggregate( (result: 0, last: 0), 
+			(acc, digit) => (acc.result + digit - ((digit > acc.last) ? acc.last << 1: 0), digit),
+			acc => acc.result);
+
+*/
+	private int RomanToDecimal(string romanNumber) => 
+		romanNumber
+			.Select(RomanDigit)
+			.Zip(romanNumber
+				.Select(RomanDigit)
+				.Concat(Enumerable.Repeat(0,1))
+				.Skip(1), 
+				(curr,next) => curr * (next > curr ? -1 : +1))
+			.Sum();
 
         private int RomanDigit(char digit) => 
             new int[]{100, 500, 0, 0, 0, 0, 1, 1, 0, 50, 1000, 
